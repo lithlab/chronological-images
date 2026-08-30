@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>做本画册 · LITH LAB</title>
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <link rel="stylesheet" href="styles.css?v=20260830-cursor2-gutter5" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section id="shelf" class="shelf">
+    <header class="shelf-head">
+      <div class="shelf-copy">
+        <p class="kicker">LITH LAB</p>
+        <h1>做本画册</h1>
+        <p class="lede">选好照片，轻松编成一本可以翻页的电子画册。导出打印也漂亮。</p>
+      </div>
+      <button type="button" class="shelf-add" id="shelfAdd" aria-label="新画册">+</button>
+    </header>
+    <aside id="yearWheel" class="year-wheel" aria-label="年份时间轴">
+      <div class="year-wheel-arc" aria-hidden="true"></div>
+      <div class="year-wheel-track" id="yearWheelTrack"></div>
+    </aside>
+    <div id="coverGrid" class="cover-flow" aria-label="书架"></div>
+    <div class="shelf-scrub" id="shelfScrub" hidden>
+      <input type="range" id="shelfSlider" min="0" max="0" value="0" step="1" aria-label="浏览画册" />
+    </div>
+  </section>
+
+  <section id="reader" class="reader" hidden>
+    <button type="button" class="menu-btn" id="editMenuBtn" aria-label="编辑菜单" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <aside class="edit-drawer" id="editDrawer">
+      <div class="edit-drawer-inner">
+        <div class="edit-drawer-bar">
+          <button type="button" class="edit-close" id="editCloseBtn" aria-label="关闭编辑栏">
+            <span></span><span></span>
+          </button>
+        </div>
+        <div class="manager-grid">
+          <div class="edit-photos-launch">
+            <button type="button" class="text-btn" id="editPhotosBtn">整理照片</button>
+            <button type="button" class="text-btn" id="editAddPhotosBtn">+ 加入照片</button>
+          </div>
+          <section class="edit-fold" data-fold="maxPerPage">
+            <div class="fold-head">
+              <button type="button" class="fold-toggle" data-fold="maxPerPage">每页最多几张照片？</button>
+            </div>
+            <div class="fold-body">
+              <div class="chip-row" id="maxPerPageRow"></div>
+            </div>
+          </section>
+          <section class="edit-fold" data-fold="style">
+            <div class="fold-head">
+              <button type="button" class="fold-toggle" data-fold="style">排版风格</button>
+            </div>
+            <div class="fold-body">
+              <div id="styleCards" class="style-cards"></div>
+            </div>
+          </section>
+          <section class="edit-fold" data-fold="pageNum">
+            <div class="fold-head">
+              <button type="button" class="fold-toggle" data-fold="pageNum">页码</button>
+            </div>
+            <div class="fold-body">
+              <div class="chip-row" id="pageNumRow"></div>
+            </div>
+          </section>
+          <section class="edit-fold" data-fold="filter">
+            <div class="fold-head">
+              <button type="button" class="fold-toggle" data-fold="filter">照片滤镜</button>
+            </div>
+            <div class="fold-body">
+              <div id="filterCards" class="filter-cards"></div>
+            </div>
+          </section>
+          <section class="edit-fold" data-fold="process">
+            <div class="fold-head">
+              <button type="button" class="fold-toggle" data-fold="process">照片处理风格</button>
+            </div>
+            <div class="fold-body">
+              <p class="process-key-note">需要填写 API Key 才可以处理风格，否则只能更换滤镜。</p>
+              <div id="processCards" class="style-cards process-cards"></div>
+              <label class="field api-field">
+                <span>apikey</span>
+                <div class="chip-row" id="apiProviderRow"></div>
+                <div class="api-key-row" id="apiKeyRow">
+                  <input type="password" id="processApiKey" placeholder="粘贴所选服务的 API Key" autocomplete="off" spellcheck="false" />
+                  <button type="button" class="api-key-toggle" id="processApiKeyToggle" aria-label="显示 API Key" aria-pressed="false" title="显示">
+                    <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.7 6.2A9 9 0 0 1 12 6c6.4 0 10 6 10 6a16 16 0 0 1-4 4.5M6.6 6.7A16 16 0 0 0 2 12s3.6 7 10 7a9.6 9.6 0 0 0 4.1-.9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.6 9.7a2.8 2.8 0 0 0 4.7 3.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                  </button>
+                </div>
+                <input type="text" id="arkModelInput" hidden placeholder="接入点 ID（可选，ep- 开头）" autocomplete="off" spellcheck="false" />
+                <small id="apiHint"></small>
+              </label>
+            </div>
+          </section>
+        </div>
+      </div>
+    </aside>
+    <div class="reader-main" id="readerMain">
+      <header class="book-header">
+        <p id="bookTitle" class="book-title" contenteditable="true" spellcheck="false" role="textbox" aria-label="书名" title="点这里改书名"></p>
+        <button type="button" class="back-btn" id="backBtn">返回书架</button>
+        <div class="gen-dock" id="genDock">
+          <button type="button" class="primary" id="randomAllBtn">随机生成</button>
+          <button type="button" class="ghost" id="rerollBtn">随机一次排版</button>
+          <button type="button" class="ghost" id="processRegenBtn">重新生成风格</button>
+          <button type="button" class="ghost" id="processStopBtn" hidden>停止风格生成</button>
+          <p id="processStatus" class="process-status" hidden aria-live="polite">正在生成…</p>
+        </div>
+      </header>
+      <div class="book-wrap">
+        <div class="book-stage" id="bookStage"></div>
+      </div>
+      <footer class="reader-chrome">
+        <nav class="pager" id="pager">
+          <button type="button" class="pager-jump" id="jumpHome">封面</button>
+          <div class="pager-now">
+            <button type="button" class="pager-arrow" id="prevPage" aria-label="上一页">‹</button>
+            <div class="pager-status">
+              <span id="pageLabel">01  02</span>
+            </div>
+            <button type="button" class="pager-arrow" id="nextPage" aria-label="下一页">›</button>
+          </div>
+          <button type="button" class="pager-jump" id="jumpEdit">编辑</button>
+        </nav>
+        <input type="range" id="pageSlider" class="pager-track" min="0" max="2" value="1" />
+      </footer>
+    </div>
+    <button type="button" class="export-btn" id="exportPdf">导出 PDF</button>
+  </section>
+
+  <div id="flyLayer" class="fly-layer" hidden></div>
+
+  <dialog id="coverModal" class="paper-modal">
+    <form method="dialog" id="coverForm" class="modal-body">
+      <h2>新画册</h2>
+      <button type="button" class="cover-pick" id="coverPick">
+        <img id="coverPreview" alt="" hidden />
+        <span id="coverPickHint">可选。不放图则用随机简约封面</span>
+      </button>
+      <label class="field">
+        <span>画册名</span>
+        <input type="text" id="coverName" maxlength="24" placeholder="例如：京都的雨" required />
+      </label>
+      <label class="field">
+        <span>年份</span>
+        <input type="number" id="coverYear" min="1800" max="2200" step="1" required />
+      </label>
+      <div class="chip-row year-chip-row" id="coverYearChips"></div>
+      <div class="modal-actions">
+        <button type="button" class="ghost" id="coverCancel">取消</button>
+        <button type="submit" value="ok" class="primary" id="coverSubmit">立到书架</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="processConfirmModal" class="paper-modal confirm-modal">
+    <div class="modal-body">
+      <p class="kicker">重新生成风格</p>
+      <h2>再生成一版吗？</h2>
+      <p class="confirm-copy">只会处理当前摊开的这一页。新的一版会追加到照片编辑里，旧版还在，可以随时换回去。</p>
+      <div class="confirm-actions">
+        <button type="button" class="ghost" id="processConfirmYes">是</button>
+        <button type="button" class="btn-safe" id="processConfirmNo">否</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="customProcessNameModal" class="paper-modal">
+    <form method="dialog" id="customProcessNameForm" class="modal-body">
+      <p class="kicker">新增提示词</p>
+      <h2>给这个风格起名</h2>
+      <p class="confirm-copy">英文名会出现在卡片上，中文名写在下面一行。</p>
+      <label class="field">
+        <span>English name</span>
+        <input type="text" id="customProcessNameEn" maxlength="48" placeholder="my-watercolor" required autocomplete="off" />
+      </label>
+      <label class="field">
+        <span>中文名称</span>
+        <input type="text" id="customProcessNameZh" maxlength="24" placeholder="我的水彩" required autocomplete="off" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="ghost" id="customProcessNameCancel">取消</button>
+        <button type="submit" class="primary">下一步</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="customProcessPromptModal" class="paper-modal prompt-modal">
+    <form method="dialog" id="customProcessPromptForm" class="modal-body">
+      <p class="kicker" id="customProcessPromptKicker">自定义提示词</p>
+      <h2 id="customProcessPromptTitle">写下改图提示词</h2>
+      <p class="confirm-copy">用英文写效果更稳。点这个风格时，会把当前摊开页的照片和这段提示词一起送给改图接口。</p>
+      <label class="field">
+        <span>Prompt</span>
+        <textarea id="customProcessPromptText" rows="12" placeholder="Image-to-image edit of the attached photograph. Keep the same subject, pose, and identity.&#10;&#10;"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="ghost" id="customProcessPromptCancel">取消</button>
+        <button type="submit" class="primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="processBusy" class="process-busy" hidden>
+    <p id="processBusyText">正在处理照片…</p>
+  </div>
+
+  <div id="magMenu" class="mag-menu" hidden>
+    <button type="button" id="magMenuYear">更换年份</button>
+    <button type="button" class="is-danger" id="magMenuDelete">删除</button>
+  </div>
+
+  <dialog id="yearModal" class="paper-modal confirm-modal">
+    <div class="modal-body">
+      <p class="kicker">更换年份</p>
+      <h2>放到哪一年？</h2>
+      <p class="confirm-copy" id="yearMoveCopy">只会列出已经建过画册的年份。</p>
+      <div class="chip-row year-chip-row" id="yearMoveRow"></div>
+      <div class="modal-actions">
+        <button type="button" class="ghost" id="yearMoveCancel">取消</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="deleteModal" class="paper-modal confirm-modal">
+    <div class="modal-body">
+      <p class="kicker">删除相册</p>
+      <h2>要删掉这一本吗？</h2>
+      <p class="confirm-copy">「<span id="deleteName"></span>」里的封面和照片都会去掉，不能恢复。</p>
+      <div class="confirm-actions">
+        <button type="button" class="ghost" id="deleteYes">是</button>
+        <button type="button" class="btn-safe" id="deleteNo">否</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="managerModal" class="paper-modal manager-modal">
+    <div class="modal-body manager-body">
+      <header class="manager-head">
+        <div>
+          <p class="kicker">照片</p>
+          <h2 id="managerTitle">整理照片</h2>
+        </div>
+        <button type="button" class="edit-close" id="managerClose" aria-label="关闭">
+          <span></span><span></span>
+        </button>
+      </header>
+      <p class="confirm-copy" id="managerCopy">拖动调整先后。每张底下是原片和生成过的版本，点一下就能换回，重新生成也不会丢掉旧版。</p>
+      <div class="section-label">
+        <span>照片全览</span>
+        <button type="button" class="text-btn" id="addPhotosBtn">+ 加入照片</button>
+      </div>
+      <div id="photoBank" class="photo-bank"></div>
+    </div>
+  </dialog>
+
+  <input type="file" id="coverFile" accept="image/*" hidden />
+  <input type="file" id="photoFiles" accept="image/*" multiple hidden />
+  <input type="file" id="replaceFile" accept="image/*" hidden />
+  <div id="dotCursor" class="dot-cursor" popover="manual" aria-hidden="true"><span></span></div>
+
+  <script src="vendor/page-flip.browser.js"></script>
+  <script src="vendor/html2canvas.min.js"></script>
+  <script src="app.js?v=20260830-cursor2-gutter5"></script>
+</body>
+</html>
